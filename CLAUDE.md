@@ -3,6 +3,12 @@
 ## Loyiha turi
 abuyahyo/qissalar — GitHub Pages SPA. Bolalar uchun "Payg'ambarlar qissasi" (Shayx Muhammad Sodiq Muhammad Yusuf) reader.
 
+## Auditoriya (MUHIM)
+Ilovaning **foydalanuvchisi — katta odam** (ota-ona / ustoz), u **yosh bolaga ovoz chiqarib o'qib beradi**. Bola ekranni o'zi o'qimaydi. Demak:
+- Matn ovoz chiqarib o'qish uchun ravon va uzluksiz bo'lishi kerak (bola uchun "soddalashtirilgan qisqa matn" emas; manba matni hech qachon o'zgartirilmaydi).
+- Pastel/emoji dizayn — bola yonida ekranga qarab o'tirishi mumkin bo'lgani uchun saqlanadi.
+- Ilovani bola o'zi o'qishi uchun **optimizatsiya qilmang** (audio-narratsiya, o'yinlashtirish, harf-darajadagi soddalashtirish va h.k. kerak emas).
+
 ## Manba
 Maqola **islom.uz/maqola/2396** dan olinadi (API: `https://new.islom.uz/api/v1/posts/2396` — JSON `body` HTML matn beradi). `parse.js` shu HTML'ni strukturali `qissalar.json`ga aylantiradi.
 
