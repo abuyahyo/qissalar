@@ -36,8 +36,10 @@ body {
   overflow-wrap: break-word;
   -webkit-text-size-adjust: 100%;
   padding-top: 64px;
-  padding-bottom: 80px;
+  padding-bottom: 32px;
 }
+/* Extra bottom space only where the fixed footer is visible */
+body.is-home { padding-bottom: 80px; }
 
 .fz-l { --fz: 20px; }
 .fz-xl { --fz: 22px; }
@@ -494,8 +496,9 @@ summary:focus:not(:focus-visible) { outline: none; }
 }
 .progress-bar > span { display: block; height: 100%; background: var(--gold); }
 
-/* ---------- Footer ---------- */
+/* ---------- Footer (home page only) ---------- */
 .footer {
+  display: none; /* shown only on the home page — see body.is-home */
   position: fixed; bottom: 0; left: 0; right: 0;
   text-align: center; padding: 10px 14px;
   background: rgba(255, 247, 232, .92);
@@ -504,6 +507,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   border-top: 1px solid rgba(212, 160, 23, .15);
   font-size: 12px; color: var(--ink-soft);
 }
+body.is-home .footer { display: block; }
 .footer a { color: var(--gold); text-decoration: none; }
 
 /* ---------- Loader ---------- */
@@ -528,23 +532,25 @@ summary:focus:not(:focus-visible) { outline: none; }
   .chapter-card .num { width: 56px; height: 56px; font-size: 26px; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1a1612;
-    --bg-card: #251f1a;
-    --ink: #e9e2d4;
-    --ink-soft: #a89d8a;
-    --gold-soft: #3a2e15;
-    --green-soft: #1e2e22;
-    --rose-soft: #2e1e1e;
-    --sky-soft: #1e2730;
-    --violet-soft: #251e2e;
-    --shadow: 0 4px 16px rgba(0,0,0,.35);
-  }
-  body {
-    background-image:
-      radial-gradient(at 10% 10%, #2a221a 0, transparent 40%),
-      radial-gradient(at 90% 80%, #1e2520 0, transparent 50%);
-  }
-  .topbar, .footer { background: rgba(26, 22, 18, .92); }
+/* ---------- Night (dark) theme ---------- */
+/* Driven by data-theme on <html>, set from localStorage or the system
+   preference (see the inline head script in index.html + applyTheme in app.js). */
+:root[data-theme="dark"] {
+  --bg: #1a1612;
+  --bg-card: #251f1a;
+  --ink: #e9e2d4;
+  --ink-soft: #a89d8a;
+  --gold-soft: #3a2e15;
+  --green-soft: #1e2e22;
+  --rose-soft: #2e1e1e;
+  --sky-soft: #1e2730;
+  --violet-soft: #251e2e;
+  --shadow: 0 4px 16px rgba(0,0,0,.35);
 }
+:root[data-theme="dark"] body {
+  background-image:
+    radial-gradient(at 10% 10%, #2a221a 0, transparent 40%),
+    radial-gradient(at 90% 80%, #1e2520 0, transparent 50%);
+}
+:root[data-theme="dark"] .topbar,
+:root[data-theme="dark"] .footer { background: rgba(26, 22, 18, .92); }

@@ -11,6 +11,7 @@ const topbar = document.getElementById('topbar');
 const fontDownBtn = document.getElementById('fontDown');
 const fontUpBtn = document.getElementById('fontUp');
 const scriptBtn = document.getElementById('scriptBtn');
+const themeBtn = document.getElementById('themeBtn');
 
 // Per-chapter visual metadata (manually curated to fit the story themes)
 const CHAPTER_META = [
@@ -39,8 +40,10 @@ const fontSteps = ['', 'fz-l', 'fz-xl', 'fz-xxl'];
 let fontStep = parseInt(localStorage.getItem('qissalar.fontStep') || '0', 10);
 if (!(fontStep >= 0 && fontStep < fontSteps.length)) fontStep = 0;
 let script = localStorage.getItem('qissalar.script') || 'cyr'; // 'cyr' | 'lat'
+let theme = readTheme(); // 'dark' | 'light'
 applyFont();
 applyScript();
+applyTheme();
 
 function setFontStep(next) {
   fontStep = Math.max(0, Math.min(fontSteps.length - 1, next));
@@ -57,6 +60,34 @@ scriptBtn.addEventListener('click', () => {
   applyScript();
   render();
 });
+
+themeBtn.addEventListener('click', () => {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('qissalar.theme', theme);
+  applyTheme();
+});
+
+// Follow the system theme until the user picks one explicitly
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (!localStorage.getItem('qissalar.theme')) {
+    theme = e.matches ? 'dark' : 'light';
+    applyTheme();
+  }
+});
+
+function readTheme() {
+  const stored = localStorage.getItem('qissalar.theme');
+  if (stored === 'dark' || stored === 'light') return stored;
+  return matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeBtn.setAttribute('aria-label', theme === 'dark' ? tx('Кундузги режим') : tx('Тунги режим'));
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#1a1612' : '#fff7e8');
+}
 
 function applyFont() {
   fontSteps.forEach(c => c && document.body.classList.remove(c));
@@ -76,6 +107,7 @@ function applyScript() {
   backBtn.setAttribute('aria-label', tx('Орқага'));
   fontDownBtn.setAttribute('aria-label', tx('Шрифтни кичиклаштириш'));
   fontUpBtn.setAttribute('aria-label', tx('Шрифтни катталаштириш'));
+  themeBtn.setAttribute('aria-label', theme === 'dark' ? tx('Кундузги режим') : tx('Тунги режим'));
   // Update brand label and footer labels in HTML
   const brand = document.querySelector('.brand-text');
   if (brand) brand.textContent = tx('Қиссалар');
@@ -232,6 +264,9 @@ function parseRoute() {
 function render() {
   if (!DATA) return;
   const p = parseRoute();
+
+  // Footer (Манба / Муаллиф) is shown only on the home page
+  document.body.classList.toggle('is-home', p.length === 0);
 
   if (p.length === 0) return renderHome();
   if (p[0] === 'intro') return renderIntro();
