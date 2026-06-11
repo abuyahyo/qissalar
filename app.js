@@ -38,23 +38,29 @@ function storyEmoji(chapterIdx, story) {
 // ---------------------------------------------------------------------------
 
 let DATA = null;
-const fontSteps = ['', 'fz-l', 'fz-xl', 'fz-xxl'];
-let fontStep = parseInt(localStorage.getItem('qissalar.fontStep') || '0', 10);
-if (!(fontStep >= 0 && fontStep < fontSteps.length)) fontStep = 0;
+// Reading font size in px — 8 steps from 16 to 30 (2px increments)
+const FONT_MIN = 16, FONT_MAX = 30, FONT_STEP = 2, FONT_DEFAULT = 18;
+let fontPx = readFontPx();
 let script = localStorage.getItem('qissalar.script') || 'cyr'; // 'cyr' | 'lat'
 let theme = readTheme(); // 'dark' | 'light'
 applyFont();
 applyScript();
 applyTheme();
 
-function setFontStep(next) {
-  fontStep = Math.max(0, Math.min(fontSteps.length - 1, next));
-  localStorage.setItem('qissalar.fontStep', String(fontStep));
+function readFontPx() {
+  const v = parseInt(localStorage.getItem('qissalar.fontPx') || '', 10);
+  const valid = v >= FONT_MIN && v <= FONT_MAX && (v - FONT_MIN) % FONT_STEP === 0;
+  return valid ? v : FONT_DEFAULT;
+}
+
+function setFont(px) {
+  fontPx = Math.max(FONT_MIN, Math.min(FONT_MAX, px));
+  localStorage.setItem('qissalar.fontPx', String(fontPx));
   applyFont();
 }
 
-fontDownBtn.addEventListener('click', () => setFontStep(fontStep - 1));
-fontUpBtn.addEventListener('click', () => setFontStep(fontStep + 1));
+fontDownBtn.addEventListener('click', () => setFont(fontPx - FONT_STEP));
+fontUpBtn.addEventListener('click', () => setFont(fontPx + FONT_STEP));
 
 scriptBtn.addEventListener('click', () => {
   script = script === 'cyr' ? 'lat' : 'cyr';
@@ -113,10 +119,9 @@ function applyTheme() {
 }
 
 function applyFont() {
-  fontSteps.forEach(c => c && document.body.classList.remove(c));
-  if (fontSteps[fontStep]) document.body.classList.add(fontSteps[fontStep]);
-  fontDownBtn.disabled = fontStep === 0;
-  fontUpBtn.disabled = fontStep === fontSteps.length - 1;
+  document.documentElement.style.setProperty('--fz', fontPx + 'px');
+  fontDownBtn.disabled = fontPx <= FONT_MIN;
+  fontUpBtn.disabled = fontPx >= FONT_MAX;
 }
 
 function applyScript() {

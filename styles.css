@@ -41,9 +41,6 @@ body {
 /* Extra bottom space only where the fixed footer is visible */
 body.is-home { padding-bottom: 80px; }
 
-.fz-l { --fz: 20px; }
-.fz-xl { --fz: 22px; }
-.fz-xxl { --fz: 24px; }
 
 /* ---------- Keyboard focus (a11y) ---------- */
 a:focus-visible,
