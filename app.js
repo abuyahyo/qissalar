@@ -274,7 +274,7 @@ function renderHome() {
   app.innerHTML = `
     <section class="hero">
       <h1>${T(DATA.title)}</h1>
-      <p class="subtitle">${tx('Болалар учун ёзилган пайғамбарлар тарихи')}</p>
+      <p class="subtitle">${tx('Катталар болаларга ўқиб бериши учун')}</p>
       <p class="author">— ${T(DATA.author)}</p>
     </section>
 
