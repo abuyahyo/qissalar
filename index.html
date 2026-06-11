@@ -4,6 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#fff7e8">
+<script>
+  // Set the theme before first paint to avoid a flash (FOUC).
+  (function () {
+    try {
+      var t = localStorage.getItem('qissalar.theme');
+      if (t !== 'dark' && t !== 'light')
+        t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
 <title>Пайғамбарлар қиссаси — болалар учун</title>
 <meta name="description" content="Шайх Муҳаммад Содиқ Муҳаммад Юсуф ҳазратлари болалар учун қайта баён этган пайғамбарлар қиссаси. Ота-оналар ва устозлар болаларга овоз чиқариб ўқиб бериши учун интерактив реадер.">
 <link rel="icon" type="image/png" href="icon-192.png">
@@ -22,6 +33,7 @@
     <span class="brand-text">Қиссалар</span>
   </div>
   <button class="iconbtn" id="scriptBtn" aria-label="Кирилл / Лотин">Lat</button>
+  <button class="iconbtn" id="themeBtn" aria-label="Тунги режим">🌙</button>
   <div class="font-ctrl">
     <button class="iconbtn" id="fontDown" aria-label="Шрифтни кичиклаштириш">A−</button>
     <button class="iconbtn" id="fontUp" aria-label="Шрифтни катталаштириш">A+</button>
