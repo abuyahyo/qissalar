@@ -3,8 +3,7 @@
 //   #/                          → home
 //   #/intro                     → introduction
 //   #/c/:ci                     → chapter overview (auto-jumps if single story)
-//   #/c/:ci/s/:si               → story sections list
-//   #/c/:ci/s/:si/p/:pi         → read one section
+//   #/c/:ci/s/:si               → read full story on one page (all sections inline)
 
 const app = document.getElementById('app');
 const backBtn = document.getElementById('backBtn');
@@ -96,11 +95,6 @@ function render() {
       const si = +p[3];
       const story = chapter.stories[si];
       if (!story) return renderChapter(ci);
-
-      if (p[4] === 'p') {
-        const pi = +p[5];
-        return renderRead(ci, si, pi);
-      }
       return renderStory(ci, si);
     }
     return renderChapter(ci);
@@ -209,67 +203,53 @@ function renderStory(ci, si) {
   scrollTop();
   const ch = DATA.chapters[ci];
   const st = ch.stories[si];
-  const meta = CHAPTER_META[ci] || {};
   const crumb = ch.stories.length > 1 ? `${escape(ch.title)} ›` : `Боб ${ci + 1}`;
-  app.innerHTML = `
-    <div class="page-head">
-      <div class="crumb">${crumb}</div>
-      <h1>${storyEmoji(ci, st)} ${escape(st.title)}</h1>
-      <p class="lead">${st.sections.length} бўлим · Тегиб кўрсатилган бўлимни ўқинг</p>
-    </div>
 
-    <ul class="section-list">
-      ${st.sections.map((s, pi) => `
-        <li>
-          <a class="section-item" href="#/c/${ci}/s/${si}/p/${pi}">
-            <div class="n ${s.number == null ? 'no-num' : ''}">${s.number == null ? '◆' : s.number}</div>
-            <div class="t">${escape(s.title || 'Бўлим')}</div>
-            <div class="a">›</div>
-          </a>
-        </li>
-      `).join('')}
-    </ul>
-  `;
-}
+  // Continuous flow: render every section's blocks inline with the section title as a heading
+  const body = st.sections.map((s, pi) => {
+    const hdr = s.title
+      ? `<h2 class="sec-head" id="s${pi}">
+           ${s.number != null ? `<span class="sec-num">${s.number}</span>` : '<span class="sec-dot">◆</span>'}
+           <span>${escape(s.title)}</span>
+         </h2>`
+      : '';
+    return hdr + renderBlocks(s.blocks);
+  }).join('');
 
-function renderRead(ci, si, pi) {
-  topbar.classList.remove('no-back');
-  scrollTop();
-  const ch = DATA.chapters[ci];
-  const st = ch.stories[si];
-  const section = st.sections[pi];
-  if (!section) return renderStory(ci, si);
+  // Next/prev story navigation (skip the per-section paging entirely)
+  let prevHref = null, prevLabel = '';
+  if (si > 0) { prevHref = `#/c/${ci}/s/${si - 1}`; prevLabel = ch.stories[si - 1].title; }
+  else if (ci > 0) {
+    const pc = DATA.chapters[ci - 1];
+    prevHref = `#/c/${ci - 1}/s/${pc.stories.length - 1}`;
+    prevLabel = pc.title;
+  }
 
-  const total = st.sections.length;
-  const progress = Math.round(((pi + 1) / total) * 100);
-
-  const prevHref = pi > 0 ? `#/c/${ci}/s/${si}/p/${pi - 1}` : null;
-  let nextHref = null;
-  if (pi < total - 1) {
-    nextHref = `#/c/${ci}/s/${si}/p/${pi + 1}`;
-  } else {
-    // jump to next story / next chapter if available
-    if (ch.stories[si + 1]) nextHref = `#/c/${ci}/s/${si + 1}/p/0`;
-    else if (DATA.chapters[ci + 1]) nextHref = `#/c/${ci + 1}`;
+  let nextHref = null, nextLabel = '';
+  if (ch.stories[si + 1]) { nextHref = `#/c/${ci}/s/${si + 1}`; nextLabel = ch.stories[si + 1].title; }
+  else if (DATA.chapters[ci + 1]) {
+    nextHref = `#/c/${ci + 1}/s/0`;
+    nextLabel = DATA.chapters[ci + 1].title;
   }
 
   app.innerHTML = `
     <article class="reader">
       <div class="reader-head">
-        <div class="crumb">${escape(st.title)} · ${pi + 1} / ${total}</div>
-        <h1>
-          ${section.number != null ? `<span class="num">${section.number}</span>` : ''}
-          <span>${escape(section.title || '')}</span>
-        </h1>
-        <div class="progress-bar"><span style="width:${progress}%"></span></div>
+        <div class="crumb">${crumb}</div>
+        <h1>${storyEmoji(ci, st)} ${escape(st.title)}</h1>
+        <p class="lead">${st.sections.length} бўлим</p>
       </div>
 
-      ${renderBlocks(section.blocks)}
+      ${body}
 
-      <div class="reader-nav">
-        <a class="${prevHref ? '' : 'disabled'}" href="${prevHref || '#'}">‹ Олдинги</a>
-        <a class="home" href="#/c/${ci}/s/${si}">☰</a>
-        <a class="${nextHref ? '' : 'disabled'}" href="${nextHref || '#'}">Кейинги ›</a>
+      <div class="reader-nav reader-nav-wide">
+        ${prevHref
+          ? `<a class="navlink prev" href="${prevHref}"><span class="dir">‹ Олдинги</span><span class="ttl">${escape(prevLabel)}</span></a>`
+          : '<span class="navlink disabled"></span>'}
+        <a class="navlink home" href="#/" title="Бош саҳифа">🏠</a>
+        ${nextHref
+          ? `<a class="navlink next" href="${nextHref}"><span class="dir">Кейинги ›</span><span class="ttl">${escape(nextLabel)}</span></a>`
+          : '<span class="navlink disabled"></span>'}
       </div>
     </article>
   `;
