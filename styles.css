@@ -158,52 +158,6 @@ summary:focus:not(:focus-visible) { outline: none; }
   transition: transform .15s, box-shadow .15s;
 }
 
-/* "Davom etish" card on home */
-.resume-card {
-  display: flex; align-items: center; gap: 14px;
-  padding: 16px 18px;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #4a8c5a 0%, #3b7649 100%);
-  color: #fff;
-  border-radius: var(--radius);
-  text-decoration: none;
-  box-shadow: 0 6px 20px rgba(74, 140, 90, .25);
-  transition: transform .15s;
-}
-.resume-card:active { transform: scale(.98); }
-.resume-card .ico {
-  font-size: 22px;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: rgba(255,255,255,.18);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.resume-card .lbl-wrap { flex: 1; min-width: 0; }
-.resume-card .lbl { font-weight: 700; font-size: 17px; line-height: 1.2; }
-.resume-card .desc {
-  font-size: 13px; opacity: .85; margin-top: 3px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.resume-card .prog-ring {
-  width: 44px; height: 44px; flex-shrink: 0;
-  border-radius: 50%;
-  background:
-    conic-gradient(#fff calc(var(--p, 0) * 1%), rgba(255,255,255,.22) 0);
-  display: flex; align-items: center; justify-content: center;
-  position: relative;
-}
-.resume-card .prog-ring::before {
-  content: '';
-  position: absolute; inset: 4px;
-  border-radius: 50%;
-  background: #4a8c5a;
-}
-.resume-card .prog-ring span {
-  position: relative;
-  font-size: 11px; font-weight: 700;
-  color: #fff;
-}
 .intro-card:active { transform: scale(.98); }
 .intro-card .ico { font-size: 36px; }
 .intro-card .lbl { font-weight: 600; font-size: 17px; }
