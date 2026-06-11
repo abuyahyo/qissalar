@@ -14,6 +14,7 @@ const scriptBtn = document.getElementById('scriptBtn');
 const themeBtn = document.getElementById('themeBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
+const readbar = document.getElementById('readbar');
 
 // Per-chapter visual metadata (colour tint + subtitle)
 const CHAPTER_META = [
@@ -220,6 +221,26 @@ window.addEventListener('scroll', () => {
   clearTimeout(scrollSaveTimer);
   scrollSaveTimer = setTimeout(saveBookmark, 600);
 }, { passive: true });
+
+// ---------- Reading progress bar (gold line under the topbar) ----------
+function updateReadbar() {
+  if (readbar.hidden) return;
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  readbar.style.transform = `scaleX(${p})`;
+}
+
+let readbarRaf = false;
+window.addEventListener('scroll', () => {
+  if (readbarRaf) return;
+  readbarRaf = true;
+  requestAnimationFrame(() => { readbarRaf = false; updateReadbar(); });
+}, { passive: true });
+
+function setReadbar(visible) {
+  readbar.hidden = !visible;
+  if (visible) requestAnimationFrame(updateReadbar);
+}
 window.addEventListener('pagehide', saveBookmark);
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveBookmark(); });
 
@@ -231,8 +252,10 @@ document.addEventListener('click', e => {
   const id = a.getAttribute('href').slice(1);
   const el = document.getElementById(id);
   if (el) {
-    const top = el.getBoundingClientRect().top + window.scrollY - 70;
-    window.scrollTo({ top, behavior: 'smooth' });
+    // Offset by the real topbar height (it grows with the iOS safe area)
+    const top = el.getBoundingClientRect().top + window.scrollY - (topbar.offsetHeight + 14);
+    const behavior = matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    window.scrollTo({ top, behavior });
     const details = a.closest('details');
     if (details) details.open = false;
   }
@@ -284,6 +307,11 @@ function render() {
   if (!DATA) return;
   const p = parseRoute();
 
+  // Replay the page fade-in on every route render
+  app.style.animation = 'none';
+  void app.offsetHeight;
+  app.style.animation = '';
+
   // Footer (Манба / Муаллиф) is shown only on the home page
   document.body.classList.toggle('is-home', p.length === 0);
 
@@ -311,6 +339,7 @@ function render() {
 
 function renderHome() {
   topbar.classList.add('no-back');
+  setReadbar(false);
   scrollTop();
   app.innerHTML = `
     <section class="hero">
@@ -351,6 +380,7 @@ function renderHome() {
 
 function renderIntro() {
   topbar.classList.remove('no-back');
+  setReadbar(true);
   scrollTop();
   app.innerHTML = `
     <article class="reader">
@@ -375,6 +405,7 @@ function renderChapter(ci) {
     return renderStory(ci, 0);
   }
   topbar.classList.remove('no-back');
+  setReadbar(false);
   scrollTop();
   app.innerHTML = `
     <div class="page-head">
@@ -402,6 +433,7 @@ function renderChapter(ci) {
 
 function renderStory(ci, si) {
   topbar.classList.remove('no-back');
+  setReadbar(true);
   const ch = DATA.chapters[ci];
   const st = ch.stories[si];
   const crumb = ch.stories.length > 1 ? `${T(ch.title)} ›` : `${tx('Боб')} ${ci + 1}`;
@@ -467,6 +499,8 @@ function renderStory(ci, si) {
       ${tocHtml}
 
       ${body}
+
+      <div class="story-end" aria-hidden="true">✦ ✦ ✦</div>
 
       <div class="reader-nav reader-nav-wide">
         ${prevHref

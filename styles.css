@@ -15,6 +15,7 @@
   --violet-soft: #ece6f0;
   --line: rgba(33, 29, 23, .09);
   --line-strong: rgba(33, 29, 23, .14);
+  --press: rgba(0, 0, 0, .06);
   --bar-bg: rgba(247, 243, 234, .82);
   --shadow: 0 1px 2px rgba(40, 30, 12, .04), 0 8px 24px rgba(40, 30, 12, .05);
   --radius: 16px;
@@ -35,11 +36,15 @@ body {
   min-height: 100vh;
   overflow-wrap: break-word;
   -webkit-text-size-adjust: 100%;
-  padding-top: 60px;
+  padding-top: calc(60px + env(safe-area-inset-top, 0px));
   padding-bottom: 32px;
+  transition: font-size .15s ease; /* smooth A−/A+ steps */
 }
 /* Extra bottom space only where the fixed footer is visible */
-body.is-home { padding-bottom: 72px; }
+body.is-home { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+
+a, button, summary { -webkit-tap-highlight-color: transparent; }
+::selection { background: var(--gold-soft); }
 
 /* ---------- Keyboard focus (a11y) ---------- */
 a:focus-visible,
@@ -57,14 +62,25 @@ summary:focus:not(:focus-visible) { outline: none; }
 /* ---------- Topbar ---------- */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  height: 56px;
+  height: calc(56px + env(safe-area-inset-top, 0px));
   display: flex; align-items: center; gap: 8px;
-  padding: 0 10px;
+  padding: env(safe-area-inset-top, 0px) max(10px, env(safe-area-inset-right, 0px)) 0 max(10px, env(safe-area-inset-left, 0px));
   background: var(--bar-bg);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
   border-bottom: 1px solid var(--line);
 }
+
+/* Reading progress — thin gold line along the bottom edge of the topbar */
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 2.5px;
+  background: var(--gold);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+.readbar[hidden] { display: none; }
 .brand {
   flex: 1; display: flex; align-items: center; gap: 8px;
   font-weight: 600; font-size: 16px; letter-spacing: -0.01em;
@@ -79,7 +95,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   display: inline-flex; align-items: center; justify-content: center;
   transition: background .15s, transform .1s;
 }
-.iconbtn:active { background: rgba(0, 0, 0, .06); transform: scale(.94); }
+.iconbtn:active { background: var(--press); transform: scale(.94); }
 #backBtn { font-size: 22px; }
 #scriptBtn { font-size: 15px; font-weight: 600; }
 .font-ctrl { display: flex; align-items: center; gap: 2px; }
@@ -93,7 +109,7 @@ summary:focus:not(:focus-visible) { outline: none; }
 .settings-panel {
   position: absolute;
   top: calc(100% + 8px);
-  right: 8px;
+  right: max(8px, env(safe-area-inset-right, 0px));
   display: grid;
   gap: 2px;
   min-width: 200px;
@@ -118,7 +134,14 @@ summary:focus:not(:focus-visible) { outline: none; }
 .container {
   max-width: var(--maxw);
   margin: 0 auto;
-  padding: 16px 18px;
+  padding: 16px max(18px, env(safe-area-inset-right, 0px)) 16px max(18px, env(safe-area-inset-left, 0px));
+}
+
+/* Soft page transition on route change (restarted from render() in app.js) */
+#app { animation: pagefade .22s ease-out; }
+@keyframes pagefade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
 }
 
 /* ---------- Home ---------- */
@@ -269,14 +292,24 @@ summary:focus:not(:focus-visible) { outline: none; }
   margin-bottom: 20px;
 }
 
-/* Qur'an quote — refined */
+/* Qur'an quote — green accent + soft tint + ﴾…﴿ ornament */
 .reader .quote {
   margin: 22px 0;
-  padding: 6px 6px 6px 20px;
+  padding: 13px 16px 13px 18px;
   border-left: 2.5px solid var(--green);
+  border-radius: 0 14px 14px 0;
+  background: var(--green-soft);
   font-style: italic;
   color: var(--ink);
   line-height: 1.7;
+}
+.reader .quote::before { content: '﴾ '; }
+.reader .quote::after { content: ' ﴿'; }
+.reader .quote::before,
+.reader .quote::after {
+  color: var(--green);
+  font-style: normal;
+  font-size: 1.05em;
 }
 
 .reader h2.subhead {
@@ -361,6 +394,17 @@ summary:focus:not(:focus-visible) { outline: none; }
 }
 .reader .sec-dot { color: var(--gold); font-size: 20px; flex-shrink: 0; }
 
+/* End-of-story ornament */
+.story-end {
+  text-align: center;
+  margin: 34px 0 0;
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: .9em;
+  padding-left: .9em; /* visually re-centre (letter-spacing trails the last glyph) */
+  user-select: none;
+}
+
 /* ---------- Reader navigation ---------- */
 .reader-nav {
   display: flex; gap: 10px; margin-top: 32px;
@@ -423,7 +467,8 @@ summary:focus:not(:focus-visible) { outline: none; }
 .footer {
   display: none; /* shown only on the home page — see body.is-home */
   position: fixed; bottom: 0; left: 0; right: 0;
-  text-align: center; padding: 11px 14px;
+  text-align: center;
+  padding: 11px 14px calc(11px + env(safe-area-inset-bottom, 0px));
   background: var(--bar-bg);
   backdrop-filter: saturate(180%) blur(16px);
   -webkit-backdrop-filter: saturate(180%) blur(16px);
@@ -445,11 +490,37 @@ body.is-home .footer { display: block; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ---------- Hover states (desktop / pointer devices) ---------- */
+@media (hover: hover) and (pointer: fine) {
+  .iconbtn:hover:not(:disabled) { background: var(--press); }
+  .intro-card:hover,
+  .chapter-card:hover,
+  .story-card:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .reader-nav a:hover:not(.disabled),
+  .reader-nav-wide .navlink:hover:not(.disabled) {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow);
+  }
+  .toc summary:hover { background: var(--gold-tint); }
+  .toc-list li a:hover { background: var(--gold-tint); }
+  .footer a:hover { text-decoration: underline; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  #app { animation: none; }
+  * { transition: none !important; }
+}
+
 /* ---------- Wide screens ---------- */
 @media (min-width: 720px) {
-  body { padding-top: 64px; }
-  .topbar { height: 60px; }
-  .container { padding: 28px 24px; }
+  body { padding-top: calc(64px + env(safe-area-inset-top, 0px)); }
+  .topbar { height: calc(60px + env(safe-area-inset-top, 0px)); }
+  .container { padding: 28px max(24px, env(safe-area-inset-right, 0px)) 28px max(24px, env(safe-area-inset-left, 0px)); }
   .hero { padding: 52px 16px 28px; }
   .hero h1 { font-size: 38px; }
   .reader-head h1 { font-size: 32px; }
@@ -474,6 +545,7 @@ body.is-home .footer { display: block; }
   --violet-soft: #241f2c;
   --line: rgba(236, 229, 216, .10);
   --line-strong: rgba(236, 229, 216, .18);
+  --press: rgba(255, 255, 255, .08);
   --bar-bg: rgba(22, 19, 15, .8);
   --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .4);
 }
