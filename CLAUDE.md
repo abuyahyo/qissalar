@@ -60,7 +60,7 @@ git add qissalar.json && git commit && git push
 
 ## Dizayn qoidalari
 - Mobile-first (user telefondan o'qiydi)
-- Shrift: iOS native — UI uchun `-apple-system` (SF Pro), o'qish matni uchun `ui-serif` (iOS'da New York). Tashqi shrift yuklanmaydi.
+- Shrift: iOS native sans — hamma joyda (UI ham, o'qish matni ham) `-apple-system` (iOS'da SF Pro). `styles.css`'dagi `--font` tokeni orqali boshqariladi. Tashqi shrift yuklanmaydi.
 - Qur'on iqtiboslari yashil border-left + ﴿﴾ ornament
 - Font o'lchami `A+` tugmasi bilan oshiriladi (localStorage'da saqlanadi)
 - Tungi mavzu `prefers-color-scheme: dark` orqali
