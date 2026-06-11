@@ -334,7 +334,12 @@ summary:focus:not(:focus-visible) { outline: none; }
 }
 
 .reader p { margin: 0 0 14px; }
-.reader p.italic { font-style: italic; color: var(--ink-soft); }
+.reader p.italic {
+  font-style: italic;
+  color: var(--ink); /* an address to the reader — keep it clear, not dimmed */
+  font-size: 1.05em;
+  margin-bottom: 18px;
+}
 
 .reader .quote {
   margin: 18px 0;
