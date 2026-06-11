@@ -115,7 +115,7 @@ function applyTheme() {
   themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
   themeBtn.setAttribute('aria-label', theme === 'dark' ? tx('Кундузги режим') : tx('Тунги режим'));
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'dark' ? '#1a1612' : '#fff7e8');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#16130f' : '#f7f3ea');
 }
 
 function applyFont() {
@@ -337,6 +337,7 @@ function renderHome() {
       </div>
     </a>
 
+    <div class="eyebrow">${tx('Боблар')}</div>
     <ul class="chapter-list">
       ${DATA.chapters.map((ch, i) => {
         const meta = CHAPTER_META[i] || { color: 'c-gold', emoji: '📖', subtitle: '' };
