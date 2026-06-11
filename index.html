@@ -32,11 +32,24 @@
     <span class="brand-emoji">📖</span>
     <span class="brand-text">Қиссалар</span>
   </div>
-  <button class="iconbtn" id="scriptBtn" aria-label="Кирилл / Лотин">Lat</button>
-  <button class="iconbtn" id="themeBtn" aria-label="Тунги режим">🌙</button>
-  <div class="font-ctrl">
-    <button class="iconbtn" id="fontDown" aria-label="Шрифтни кичиклаштириш">A−</button>
-    <button class="iconbtn" id="fontUp" aria-label="Шрифтни катталаштириш">A+</button>
+  <button class="iconbtn" id="settingsBtn" aria-label="Созламалар" aria-haspopup="true" aria-expanded="false">⚙️</button>
+
+  <div class="settings-panel" id="settingsPanel" role="menu" aria-label="Созламалар" hidden>
+    <div class="set-row">
+      <span class="set-label" data-tx="Ёзув">Ёзув</span>
+      <button class="iconbtn" id="scriptBtn" aria-label="Кирилл / Лотин">Lat</button>
+    </div>
+    <div class="set-row">
+      <span class="set-label" data-tx="Режим">Режим</span>
+      <button class="iconbtn" id="themeBtn" aria-label="Тунги режим">🌙</button>
+    </div>
+    <div class="set-row">
+      <span class="set-label" data-tx="Шрифт">Шрифт</span>
+      <div class="font-ctrl">
+        <button class="iconbtn" id="fontDown" aria-label="Шрифтни кичиклаштириш">A−</button>
+        <button class="iconbtn" id="fontUp" aria-label="Шрифтни катталаштириш">A+</button>
+      </div>
+    </div>
   </div>
 </header>
 
