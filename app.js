@@ -8,7 +8,8 @@
 const app = document.getElementById('app');
 const backBtn = document.getElementById('backBtn');
 const topbar = document.getElementById('topbar');
-const fontBtn = document.getElementById('fontBtn');
+const fontDownBtn = document.getElementById('fontDown');
+const fontUpBtn = document.getElementById('fontUp');
 const scriptBtn = document.getElementById('scriptBtn');
 
 // Per-chapter visual metadata (manually curated to fit the story themes)
@@ -36,15 +37,19 @@ function storyEmoji(chapterIdx, story) {
 let DATA = null;
 const fontSteps = ['', 'fz-l', 'fz-xl', 'fz-xxl'];
 let fontStep = parseInt(localStorage.getItem('qissalar.fontStep') || '0', 10);
+if (!(fontStep >= 0 && fontStep < fontSteps.length)) fontStep = 0;
 let script = localStorage.getItem('qissalar.script') || 'cyr'; // 'cyr' | 'lat'
 applyFont();
 applyScript();
 
-fontBtn.addEventListener('click', () => {
-  fontStep = (fontStep + 1) % fontSteps.length;
+function setFontStep(next) {
+  fontStep = Math.max(0, Math.min(fontSteps.length - 1, next));
   localStorage.setItem('qissalar.fontStep', String(fontStep));
   applyFont();
-});
+}
+
+fontDownBtn.addEventListener('click', () => setFontStep(fontStep - 1));
+fontUpBtn.addEventListener('click', () => setFontStep(fontStep + 1));
 
 scriptBtn.addEventListener('click', () => {
   script = script === 'cyr' ? 'lat' : 'cyr';
@@ -56,6 +61,8 @@ scriptBtn.addEventListener('click', () => {
 function applyFont() {
   fontSteps.forEach(c => c && document.body.classList.remove(c));
   if (fontSteps[fontStep]) document.body.classList.add(fontSteps[fontStep]);
+  fontDownBtn.disabled = fontStep === 0;
+  fontUpBtn.disabled = fontStep === fontSteps.length - 1;
 }
 
 function applyScript() {

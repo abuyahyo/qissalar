@@ -70,7 +70,11 @@ body {
 }
 .iconbtn:active { background: rgba(0,0,0,.08); }
 #backBtn { font-size: 24px; }
-#fontBtn { font-size: 15px; font-weight: 700; }
+.font-ctrl { display: flex; align-items: center; gap: 2px; }
+#fontDown, #fontUp { font-size: 15px; font-weight: 700; width: 36px; }
+#fontDown { font-size: 13px; }
+.iconbtn:disabled { opacity: .3; cursor: default; }
+.iconbtn:disabled:active { background: transparent; }
 .topbar.no-back #backBtn { visibility: hidden; }
 
 /* ---------- Container ---------- */
