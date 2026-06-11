@@ -205,9 +205,13 @@ function renderStory(ci, si) {
   const st = ch.stories[si];
   const crumb = ch.stories.length > 1 ? `${escape(ch.title)} ›` : `Боб ${ci + 1}`;
 
-  // Continuous flow: render every section's blocks inline with the section title as a heading
+  // Continuous flow: render every section's blocks inline with the section title as a heading.
+  // The first numbered section repeats the story title (parsing artifact) — skip that header
+  // so the page <h1> isn't echoed right below itself.
+  const norm = t => String(t || '').trim().replace(/\s+/g, ' ').toLowerCase();
   const body = st.sections.map((s, pi) => {
-    const hdr = s.title
+    const isEcho = norm(s.title) === norm(st.title);
+    const hdr = s.title && !isEcho
       ? `<h2 class="sec-head" id="s${pi}">
            ${s.number != null ? `<span class="sec-num">${s.number}</span>` : '<span class="sec-dot">◆</span>'}
            <span>${escape(s.title)}</span>
