@@ -12,6 +12,8 @@ const fontDownBtn = document.getElementById('fontDown');
 const fontUpBtn = document.getElementById('fontUp');
 const scriptBtn = document.getElementById('scriptBtn');
 const themeBtn = document.getElementById('themeBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
 
 // Per-chapter visual metadata (manually curated to fit the story themes)
 const CHAPTER_META = [
@@ -67,6 +69,27 @@ themeBtn.addEventListener('click', () => {
   applyTheme();
 });
 
+// ---------- Settings menu (gear button) ----------
+// The script / theme / font controls live behind this single button.
+function setSettingsOpen(open) {
+  settingsPanel.hidden = !open;
+  settingsBtn.setAttribute('aria-expanded', String(open));
+}
+settingsBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  setSettingsOpen(settingsPanel.hidden);
+});
+// Close when clicking outside, or on Escape
+document.addEventListener('click', e => {
+  if (!settingsPanel.hidden &&
+      !settingsPanel.contains(e.target) && !settingsBtn.contains(e.target)) {
+    setSettingsOpen(false);
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !settingsPanel.hidden) setSettingsOpen(false);
+});
+
 // Follow the system theme until the user picks one explicitly
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
   if (!localStorage.getItem('qissalar.theme')) {
@@ -108,6 +131,9 @@ function applyScript() {
   fontDownBtn.setAttribute('aria-label', tx('Шрифтни кичиклаштириш'));
   fontUpBtn.setAttribute('aria-label', tx('Шрифтни катталаштириш'));
   themeBtn.setAttribute('aria-label', theme === 'dark' ? tx('Кундузги режим') : tx('Тунги режим'));
+  settingsBtn.setAttribute('aria-label', tx('Созламалар'));
+  // Transliterate static UI labels marked with data-tx (e.g. settings rows)
+  document.querySelectorAll('[data-tx]').forEach(el => { el.textContent = tx(el.dataset.tx); });
   // Update brand label and footer labels in HTML
   const brand = document.querySelector('.brand-text');
   if (brand) brand.textContent = tx('Қиссалар');

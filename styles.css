@@ -93,6 +93,29 @@ summary:focus:not(:focus-visible) { outline: none; }
 .iconbtn:disabled:active { background: transparent; }
 .topbar.no-back #backBtn { visibility: hidden; }
 
+/* ---------- Settings popover (gear button) ---------- */
+.settings-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 10px;
+  display: grid;
+  gap: 2px;
+  min-width: 190px;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 1px solid rgba(212, 160, 23, .25);
+  border-radius: 14px;
+  box-shadow: var(--shadow-hover);
+  z-index: 60;
+}
+.settings-panel[hidden] { display: none; }
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px;
+  padding: 4px 6px 4px 12px;
+}
+.set-label { font-size: 15px; font-weight: 500; color: var(--ink); }
+
 /* ---------- Container ---------- */
 .container {
   max-width: var(--maxw);
