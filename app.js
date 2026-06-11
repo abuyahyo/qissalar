@@ -324,25 +324,10 @@ function render() {
 function renderHome() {
   topbar.classList.add('no-back');
   scrollTop();
-  const bookmark = getBookmark();
-  const resumeHtml = bookmark ? `
-    <a class="resume-card" href="#/c/${bookmark.ci}/s/${bookmark.si}">
-      <span class="ico">▶︎</span>
-      <div class="lbl-wrap">
-        <div class="lbl">${tx('Давом этиш')}</div>
-        <div class="desc">${T(bookmark.storyTitle)}</div>
-      </div>
-      <div class="prog">
-        <div class="prog-ring"><span style="--p:${bookmark.progress}">${bookmark.progress}%</span></div>
-      </div>
-    </a>
-  ` : '';
   app.innerHTML = `
     <section class="hero">
       <h1>${T(DATA.title)}</h1>
     </section>
-
-    ${resumeHtml}
 
     <a class="intro-card" href="#/intro">
       <span class="ico">✨</span>
