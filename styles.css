@@ -23,7 +23,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: 'IBM Plex Serif', 'Charter', Georgia, 'Times New Roman', serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: var(--fz);
   line-height: 1.65;
   color: var(--ink);
@@ -87,10 +87,12 @@ body {
   margin-bottom: 16px;
 }
 .hero h1 {
+  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
   font-size: 28px;
   margin: 0 0 8px;
   color: var(--ink);
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .hero .subtitle {
   color: var(--ink-soft);
@@ -165,7 +167,11 @@ body {
   border-bottom: 1px dashed rgba(212, 160, 23, .35);
 }
 .page-head .crumb { font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
-.page-head h1 { font-size: 26px; margin: 0; line-height: 1.25; }
+.page-head h1 {
+  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  font-size: 26px; margin: 0; line-height: 1.25;
+  letter-spacing: -0.01em;
+}
 .page-head .lead { color: var(--ink-soft); font-size: 15px; margin-top: 8px; }
 
 .section-list {
@@ -212,7 +218,11 @@ body {
 .story-card .arrow { margin-left: auto; font-size: 20px; color: var(--ink-soft); }
 
 /* ---------- Reader ---------- */
-.reader { padding: 8px 2px 24px; }
+.reader {
+  padding: 8px 2px 24px;
+  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  letter-spacing: -0.003em;
+}
 .reader-head {
   margin-bottom: 18px;
   padding-bottom: 14px;
