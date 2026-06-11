@@ -115,6 +115,64 @@ backBtn.addEventListener('click', () => {
 window.addEventListener('hashchange', render);
 window.addEventListener('DOMContentLoaded', load);
 
+// ---------- Bookmark: where the reader stopped ----------
+const BOOKMARK_KEY = 'qissalar.lastRead';
+
+function saveBookmark() {
+  if (!DATA) return;
+  const p = parseRoute();
+  if (p[0] !== 'c' || p[2] !== 's') return; // only inside a story
+  const ci = +p[1], si = +p[3];
+  const ch = DATA.chapters[ci];
+  const st = ch?.stories?.[si];
+  if (!st) return;
+  const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  const scrollY = window.scrollY;
+  const progress = maxScroll > 0 ? Math.min(100, Math.round((scrollY / maxScroll) * 100)) : 0;
+  try {
+    localStorage.setItem(BOOKMARK_KEY, JSON.stringify({
+      ci, si, scrollY, progress,
+      storyTitle: st.title,
+      chapterTitle: ch.title,
+      time: Date.now()
+    }));
+  } catch (_) {}
+}
+
+function getBookmark() {
+  try {
+    const raw = localStorage.getItem(BOOKMARK_KEY);
+    if (!raw) return null;
+    const b = JSON.parse(raw);
+    // Validate against current data structure
+    if (!DATA?.chapters[b.ci]?.stories?.[b.si]) return null;
+    return b;
+  } catch { return null; }
+}
+
+let scrollSaveTimer = null;
+window.addEventListener('scroll', () => {
+  clearTimeout(scrollSaveTimer);
+  scrollSaveTimer = setTimeout(saveBookmark, 600);
+}, { passive: true });
+window.addEventListener('pagehide', saveBookmark);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveBookmark(); });
+
+// ---------- In-story TOC clicks → smooth-scroll without hash change ----------
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-toc]');
+  if (!a) return;
+  e.preventDefault();
+  const id = a.getAttribute('href').slice(1);
+  const el = document.getElementById(id);
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 70;
+    window.scrollTo({ top, behavior: 'smooth' });
+    const details = a.closest('details');
+    if (details) details.open = false;
+  }
+});
+
 // ---------- Service Worker registration (PWA) ----------
 // Strategy: network-first SW (see sw.js). updateViaCache:'none' so SW file
 // itself is never cached → updates land within one reload when online.
@@ -186,12 +244,27 @@ function render() {
 function renderHome() {
   topbar.classList.add('no-back');
   scrollTop();
+  const bookmark = getBookmark();
+  const resumeHtml = bookmark ? `
+    <a class="resume-card" href="#/c/${bookmark.ci}/s/${bookmark.si}">
+      <span class="ico">▶︎</span>
+      <div class="lbl-wrap">
+        <div class="lbl">${tx('Давом этиш')}</div>
+        <div class="desc">${T(bookmark.storyTitle)}</div>
+      </div>
+      <div class="prog">
+        <div class="prog-ring"><span style="--p:${bookmark.progress}">${bookmark.progress}%</span></div>
+      </div>
+    </a>
+  ` : '';
   app.innerHTML = `
     <section class="hero">
       <h1>${T(DATA.title)}</h1>
       <p class="subtitle">${tx('Болалар учун ёзилган пайғамбарлар тарихи')}</p>
       <p class="author">— ${T(DATA.author)}</p>
     </section>
+
+    ${resumeHtml}
 
     <a class="intro-card" href="#/intro">
       <span class="ico">✨</span>
@@ -278,7 +351,6 @@ function renderChapter(ci) {
 
 function renderStory(ci, si) {
   topbar.classList.remove('no-back');
-  scrollTop();
   const ch = DATA.chapters[ci];
   const st = ch.stories[si];
   const crumb = ch.stories.length > 1 ? `${T(ch.title)} ›` : `${tx('Боб')} ${ci + 1}`;
@@ -314,6 +386,25 @@ function renderStory(ci, si) {
     nextLabel = DATA.chapters[ci + 1].title;
   }
 
+  // Mundarija (table of contents) — collapsed by default; tap to expand
+  const tocHtml = st.sections.length >= 4 ? `
+    <details class="toc">
+      <summary>
+        <span class="toc-label">${tx('Мундарижа')}</span>
+        <span class="toc-count">${st.sections.length} ${tx('бўлим')}</span>
+        <span class="toc-chev">›</span>
+      </summary>
+      <ol class="toc-list">
+        ${st.sections.map((s, i) => {
+          const label = s.number != null
+            ? `${s.number}. ${s.title || ''}`
+            : (s.title || '◆');
+          return `<li><a href="#s${i}" data-toc>${T(label)}</a></li>`;
+        }).join('')}
+      </ol>
+    </details>
+  ` : '';
+
   app.innerHTML = `
     <article class="reader">
       <div class="reader-head">
@@ -321,6 +412,8 @@ function renderStory(ci, si) {
         <h1>${storyEmoji(ci, st)} ${T(st.title)}</h1>
         <p class="lead">${st.sections.length} ${tx('бўлим')}</p>
       </div>
+
+      ${tocHtml}
 
       ${body}
 
@@ -335,6 +428,16 @@ function renderStory(ci, si) {
       </div>
     </article>
   `;
+
+  // Scroll restore: if returning to a bookmarked story, jump to last scroll position
+  const bookmark = getBookmark();
+  if (bookmark && bookmark.ci === ci && bookmark.si === si && bookmark.scrollY > 0) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      window.scrollTo(0, bookmark.scrollY);
+    }));
+  } else {
+    scrollTop();
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -117,6 +117,53 @@ body {
   box-shadow: var(--shadow);
   transition: transform .15s, box-shadow .15s;
 }
+
+/* "Davom etish" card on home */
+.resume-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #4a8c5a 0%, #3b7649 100%);
+  color: #fff;
+  border-radius: var(--radius);
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(74, 140, 90, .25);
+  transition: transform .15s;
+}
+.resume-card:active { transform: scale(.98); }
+.resume-card .ico {
+  font-size: 22px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.resume-card .lbl-wrap { flex: 1; min-width: 0; }
+.resume-card .lbl { font-weight: 700; font-size: 17px; line-height: 1.2; }
+.resume-card .desc {
+  font-size: 13px; opacity: .85; margin-top: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.resume-card .prog-ring {
+  width: 44px; height: 44px; flex-shrink: 0;
+  border-radius: 50%;
+  background:
+    conic-gradient(#fff calc(var(--p, 0) * 1%), rgba(255,255,255,.22) 0);
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.resume-card .prog-ring::before {
+  content: '';
+  position: absolute; inset: 4px;
+  border-radius: 50%;
+  background: #4a8c5a;
+}
+.resume-card .prog-ring span {
+  position: relative;
+  font-size: 11px; font-weight: 700;
+  color: #fff;
+}
 .intro-card:active { transform: scale(.98); }
 .intro-card .ico { font-size: 36px; }
 .intro-card .lbl { font-weight: 600; font-size: 17px; }
@@ -277,6 +324,61 @@ body {
   font-size: 19px; margin: 22px 0 10px;
   color: var(--green);
 }
+
+/* Mundarija (table of contents) */
+.reader .toc {
+  margin: 6px 0 22px;
+  background: var(--gold-soft);
+  border: 1px solid rgba(212, 160, 23, .3);
+  border-radius: 14px;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  letter-spacing: 0;
+}
+.reader .toc summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-weight: 600; font-size: 15px;
+  color: var(--ink);
+}
+.reader .toc summary::-webkit-details-marker,
+.reader .toc summary::marker { display: none; content: ''; }
+.reader .toc .toc-label { flex: 1; }
+.reader .toc .toc-count {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.reader .toc .toc-chev {
+  font-size: 22px; line-height: 1;
+  color: var(--ink-soft);
+  transition: transform .2s;
+  display: inline-block;
+}
+.reader .toc[open] .toc-chev { transform: rotate(90deg); }
+.reader .toc-list {
+  list-style: none;
+  padding: 4px 12px 14px;
+  margin: 0;
+  display: grid; gap: 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+  border-top: 1px solid rgba(212, 160, 23, .2);
+}
+.reader .toc-list li a {
+  display: block;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--bg-card);
+  border-radius: 9px;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: transform .1s;
+}
+.reader .toc-list li a:active { transform: scale(.98); background: var(--gold-soft); }
 
 /* Inline section heading inside a continuous story */
 .reader h2.sec-head {
