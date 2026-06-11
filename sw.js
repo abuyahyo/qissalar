@@ -1,7 +1,7 @@
 // Qissalar Service Worker — network-first to avoid stale-cache problem.
 // Online users always get fresh content; cache is only a fallback for offline.
 
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = `qissalar-${VERSION}`;
 const PRECACHE = [
   './',
@@ -12,6 +12,7 @@ const PRECACHE = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './icon-maskable-512.png',
   './apple-touch-icon.png'
 ];
 
@@ -56,7 +57,11 @@ self.addEventListener('fetch', e => {
       // fall through to cache
     }
 
-    const cached = await cache.match(req) || await cache.match('./index.html');
+    // Prefer the exact cached resource. Only fall back to the app shell for
+    // navigation requests — never answer a JSON/asset request with index.html,
+    // which would otherwise surface as a confusing JSON parse error.
+    const cached = await cache.match(req) ||
+      (req.mode === 'navigate' ? await cache.match('./index.html') : null);
     if (cached) return cached;
 
     // last-ditch: wait for the original network promise

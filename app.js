@@ -69,13 +69,20 @@ function applyScript() {
   document.documentElement.lang = script === 'lat' ? 'uz-Latn' : 'uz';
   // Button shows the OTHER script (i.e. what tap will switch TO)
   scriptBtn.textContent = script === 'cyr' ? 'Lat' : 'Кир';
+  // Reflect current + target script for screen readers
+  scriptBtn.setAttribute('aria-label',
+    script === 'cyr' ? tx('Лотинчага ўтиш') : tx('Кириллчага ўтиш'));
+  // Keep the rest of the UI chrome's labels transliterated too
+  backBtn.setAttribute('aria-label', tx('Орқага'));
+  fontDownBtn.setAttribute('aria-label', tx('Шрифтни кичиклаштириш'));
+  fontUpBtn.setAttribute('aria-label', tx('Шрифтни катталаштириш'));
   // Update brand label and footer labels in HTML
   const brand = document.querySelector('.brand-text');
   if (brand) brand.textContent = tx('Қиссалар');
   const footerNote = document.querySelector('.footer small');
-  if (footerNote) footerNote.innerHTML = tx('Манба') +
-    `: <a href="https://islom.uz/maqola/2396" target="_blank" rel="noopener">islom.uz</a> · ` +
-    tx('Муаллиф') + ': ' + tx('Шайх Муҳаммад Содиқ Муҳаммад Юсуф');
+  if (footerNote) footerNote.innerHTML = escape(tx('Манба')) +
+    `: <a href="https://islom.uz/maqola/2396" target="_blank" rel="noopener noreferrer">islom.uz</a> · ` +
+    escape(tx('Муаллиф')) + ': ' + escape(tx('Шайх Муҳаммад Содиқ Муҳаммад Юсуф'));
 }
 
 // ---------- Cyrillic → Latin transliteration (Uzbek) ----------
@@ -475,5 +482,8 @@ function escape(s) {
 }
 
 function scrollTop() {
-  window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  // 'instant' is a valid scroll-behavior value; browsers that don't support it
+  // ignore the option object and jump instantly anyway.
+  try { window.scrollTo({ top: 0, behavior: 'instant' }); }
+  catch (_) { window.scrollTo(0, 0); }
 }
