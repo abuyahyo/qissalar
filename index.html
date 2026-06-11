@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#fff7e8">
 <script>
-  // Set the theme before first paint to avoid a flash (FOUC).
+  // Set the theme and font size before first paint to avoid a flash (FOUC).
   (function () {
     try {
       var t = localStorage.getItem('qissalar.theme');
       if (t !== 'dark' && t !== 'light')
         t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', t);
+      var fp = parseInt(localStorage.getItem('qissalar.fontPx'), 10);
+      if (fp >= 16 && fp <= 30)
+        document.documentElement.style.setProperty('--fz', fp + 'px');
     } catch (e) {}
   })();
 </script>
