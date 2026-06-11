@@ -15,25 +15,13 @@ const themeBtn = document.getElementById('themeBtn');
 const settingsBtn = document.getElementById('settingsBtn');
 const settingsPanel = document.getElementById('settingsPanel');
 
-// Per-chapter visual metadata (manually curated to fit the story themes)
+// Per-chapter visual metadata (colour tint + subtitle)
 const CHAPTER_META = [
-  { color: 'c-sky',    emoji: '🚢', subtitle: 'Нуҳ алайҳис-салом ва кема' },
-  { color: 'c-green',  emoji: '🌧️', subtitle: 'Ҳуд алайҳис-салом ва Од қавми' },
-  { color: 'c-rose',   emoji: '🐪', subtitle: 'Солиҳ алайҳис-салом ва Самуд қавми' },
-  { color: 'c-violet', emoji: '🗿', subtitle: 'Иброҳим, Юсуф, Мусо алайҳимус-салом' },
+  { color: 'c-sky',    subtitle: 'Нуҳ алайҳис-салом ва кема' },
+  { color: 'c-green',  subtitle: 'Ҳуд алайҳис-салом ва Од қавми' },
+  { color: 'c-rose',   subtitle: 'Солиҳ алайҳис-салом ва Самуд қавми' },
+  { color: 'c-violet', subtitle: 'Иброҳим, Юсуф, Мусо алайҳимус-салом' },
 ];
-
-// Stories within chapter 4 (and chapter 2) get prophet labels too
-function storyEmoji(chapterIdx, story) {
-  const t = story.title;
-  if (/Юсуф|гўзал қисса/i.test(t)) return '⭐';
-  if (/Канъон|Мисрга/i.test(t)) return '🌾';
-  if (/Фиръавн|Мусо/i.test(t)) return '🏛️';
-  if (/Иброҳим|Санам/i.test(t)) return '🔥';
-  if (/Нуҳ/i.test(t)) return '🌊';
-  if (/Од|Ҳуд/i.test(t)) return '🌬️';
-  return CHAPTER_META[chapterIdx]?.emoji || '📖';
-}
 
 // ---------------------------------------------------------------------------
 
@@ -330,24 +318,24 @@ function renderHome() {
     </section>
 
     <a class="intro-card" href="#/intro">
-      <span class="ico">✨</span>
       <div>
         <div class="lbl">${tx('Муқаддима')}</div>
         <div class="desc">${tx('Муаллифдан болаларга мурожаат')}</div>
       </div>
+      <div class="arrow">›</div>
     </a>
 
     <div class="eyebrow">${tx('Боблар')}</div>
     <ul class="chapter-list">
       ${DATA.chapters.map((ch, i) => {
-        const meta = CHAPTER_META[i] || { color: 'c-gold', emoji: '📖', subtitle: '' };
+        const meta = CHAPTER_META[i] || { color: 'c-gold', subtitle: '' };
         const storyCount = ch.stories.length;
         const sectionCount = ch.stories.reduce((s, st) => s + st.sections.length, 0);
         const sub = meta.subtitle || (storyCount > 1 ? `${storyCount} қисса` : `${sectionCount} бўлим`);
         return `
           <li>
             <a class="chapter-card ${meta.color}" href="#/c/${i}">
-              <div class="num">${meta.emoji}</div>
+              <div class="num">${i + 1}</div>
               <div>
                 <div class="ttl">${T(ch.title)}</div>
                 <div class="meta">${T(sub)}</div>
@@ -388,11 +376,10 @@ function renderChapter(ci) {
   }
   topbar.classList.remove('no-back');
   scrollTop();
-  const meta = CHAPTER_META[ci] || { color: 'c-gold', emoji: '📖' };
   app.innerHTML = `
     <div class="page-head">
       <div class="crumb">${tx('Боб')} ${ci + 1}</div>
-      <h1>${meta.emoji} ${T(ch.title)}</h1>
+      <h1>${T(ch.title)}</h1>
       <p class="lead">${tx(`Ушбу бобда ${ch.stories.length} қисса жамланган.`)}</p>
     </div>
 
@@ -400,7 +387,7 @@ function renderChapter(ci) {
       ${ch.stories.map((st, si) => `
         <li>
           <a class="story-card" href="#/c/${ci}/s/${si}">
-            <div class="ico">${storyEmoji(ci, st)}</div>
+            <div class="ico">${si + 1}</div>
             <div>
               <div class="ttl">${T(st.title)}</div>
               <div class="meta">${st.sections.length} ${tx('бўлим')}</div>
@@ -473,7 +460,7 @@ function renderStory(ci, si) {
     <article class="reader">
       <div class="reader-head">
         <div class="crumb">${crumb}</div>
-        <h1>${storyEmoji(ci, st)} ${T(st.title)}</h1>
+        <h1>${T(st.title)}</h1>
         <p class="lead">${st.sections.length} ${tx('бўлим')}</p>
       </div>
 

@@ -69,7 +69,6 @@ summary:focus:not(:focus-visible) { outline: none; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   padding-left: 4px;
 }
-.brand-emoji { font-size: 19px; }
 .iconbtn {
   width: 40px; height: 40px;
   border: none; background: transparent;
@@ -154,9 +153,10 @@ summary:focus:not(:focus-visible) { outline: none; }
   transition: transform .12s;
 }
 .intro-card:active { transform: scale(.985); }
-.intro-card .ico { font-size: 26px; flex-shrink: 0; }
+.intro-card > div { flex: 1; min-width: 0; }
 .intro-card .lbl { font-weight: 600; font-size: 16px; }
 .intro-card .desc { font-size: 13.5px; color: var(--ink-soft); margin-top: 2px; }
+.intro-card .arrow { font-size: 20px; color: var(--ink-faint); flex-shrink: 0; }
 
 /* Chapter list — clean rows */
 .chapter-list {
@@ -175,11 +175,12 @@ summary:focus:not(:focus-visible) { outline: none; }
 }
 .chapter-card:active { transform: scale(.985); border-color: var(--line-strong); }
 .chapter-card .num {
-  width: 44px; height: 44px;
-  border-radius: 13px;
+  width: 40px; height: 40px;
+  border-radius: 12px;
   background: var(--gold-tint);
   display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--gold);
   flex-shrink: 0;
 }
 .chapter-card .ttl {
@@ -225,10 +226,12 @@ summary:focus:not(:focus-visible) { outline: none; }
 }
 .story-card:active { transform: scale(.985); border-color: var(--line-strong); }
 .story-card .ico {
-  font-size: 24px; flex-shrink: 0;
-  width: 44px; height: 44px; border-radius: 13px;
+  flex-shrink: 0;
+  width: 40px; height: 40px; border-radius: 12px;
   background: var(--gold-tint);
   display: flex; align-items: center; justify-content: center;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 16px; font-weight: 700; color: var(--gold);
 }
 .story-card .ttl { font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; }
 .story-card .meta { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
