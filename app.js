@@ -9,6 +9,7 @@ const app = document.getElementById('app');
 const backBtn = document.getElementById('backBtn');
 const topbar = document.getElementById('topbar');
 const fontBtn = document.getElementById('fontBtn');
+const scriptBtn = document.getElementById('scriptBtn');
 
 // Per-chapter visual metadata (manually curated to fit the story themes)
 const CHAPTER_META = [
@@ -35,7 +36,9 @@ function storyEmoji(chapterIdx, story) {
 let DATA = null;
 const fontSteps = ['', 'fz-l', 'fz-xl', 'fz-xxl'];
 let fontStep = parseInt(localStorage.getItem('qissalar.fontStep') || '0', 10);
+let script = localStorage.getItem('qissalar.script') || 'cyr'; // 'cyr' | 'lat'
 applyFont();
+applyScript();
 
 fontBtn.addEventListener('click', () => {
   fontStep = (fontStep + 1) % fontSteps.length;
@@ -43,10 +46,66 @@ fontBtn.addEventListener('click', () => {
   applyFont();
 });
 
+scriptBtn.addEventListener('click', () => {
+  script = script === 'cyr' ? 'lat' : 'cyr';
+  localStorage.setItem('qissalar.script', script);
+  applyScript();
+  render();
+});
+
 function applyFont() {
   fontSteps.forEach(c => c && document.body.classList.remove(c));
   if (fontSteps[fontStep]) document.body.classList.add(fontSteps[fontStep]);
 }
+
+function applyScript() {
+  document.documentElement.lang = script === 'lat' ? 'uz-Latn' : 'uz';
+  // Button shows the OTHER script (i.e. what tap will switch TO)
+  scriptBtn.textContent = script === 'cyr' ? 'Lat' : 'Кир';
+  // Update brand label and footer labels in HTML
+  const brand = document.querySelector('.brand-text');
+  if (brand) brand.textContent = tx('Қиссалар');
+  const footerNote = document.querySelector('.footer small');
+  if (footerNote) footerNote.innerHTML = tx('Манба') +
+    `: <a href="https://islom.uz/maqola/2396" target="_blank" rel="noopener">islom.uz</a> · ` +
+    tx('Муаллиф') + ': ' + tx('Шайх Муҳаммад Содиқ Муҳаммад Юсуф');
+}
+
+// ---------- Cyrillic → Latin transliteration (Uzbek) ----------
+const CYR_LAT = {
+  'А':'A','а':'a','Б':'B','б':'b','В':'V','в':'v','Г':'G','г':'g','Д':'D','д':'d',
+  'Ё':'Yo','ё':'yo','Ж':'J','ж':'j','З':'Z','з':'z','И':'I','и':'i','Й':'Y','й':'y',
+  'К':'K','к':'k','Л':'L','л':'l','М':'M','м':'m','Н':'N','н':'n','О':'O','о':'o',
+  'П':'P','п':'p','Р':'R','р':'r','С':'S','с':'s','Т':'T','т':'t','У':'U','у':'u',
+  'Ф':'F','ф':'f','Х':'X','х':'x','Ц':'Ts','ц':'ts','Ч':'Ch','ч':'ch','Ш':'Sh','ш':'sh',
+  'Щ':'Sch','щ':'sch','Ъ':'’','ъ':'’','Ы':'I','ы':'i','Ь':'','ь':'',
+  'Э':'E','э':'e','Ю':'Yu','ю':'yu','Я':'Ya','я':'ya',
+  'Ў':'Oʻ','ў':'oʻ','Ғ':'Gʻ','ғ':'gʻ','Ҳ':'H','ҳ':'h','Қ':'Q','қ':'q'
+};
+const isLetterRe = /\p{L}/u;
+
+function toLat(s) {
+  let out = '';
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    // е/Е: 'Ye/ye' at word start, 'E/e' otherwise
+    if (c === 'е' || c === 'Е') {
+      const prev = i > 0 ? s[i - 1] : '';
+      const atStart = !isLetterRe.test(prev);
+      out += atStart ? (c === 'Е' ? 'Ye' : 'ye') : (c === 'Е' ? 'E' : 'e');
+      continue;
+    }
+    out += (CYR_LAT[c] !== undefined ? CYR_LAT[c] : c);
+  }
+  return out;
+}
+
+function tx(s) {
+  return script === 'lat' ? toLat(String(s)) : String(s);
+}
+
+// Convenience: transliterate + HTML-escape in one call
+function T(s) { return escape(tx(s)); }
 
 backBtn.addEventListener('click', () => {
   if (history.length > 1) history.back();
@@ -57,14 +116,14 @@ window.addEventListener('hashchange', render);
 window.addEventListener('DOMContentLoaded', load);
 
 async function load() {
-  app.innerHTML = `<div class="loading"><div class="spinner"></div>Юкланмоқда…</div>`;
+  app.innerHTML = `<div class="loading"><div class="spinner"></div>${tx('Юкланмоқда')}…</div>`;
   try {
     const res = await fetch('qissalar.json');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     DATA = await res.json();
     render();
   } catch (e) {
-    app.innerHTML = `<div class="loading" style="color:#b00">Хатолик: ${escape(e.message)}<br><br>qissalar.json юкланмади.</div>`;
+    app.innerHTML = `<div class="loading" style="color:#b00">${tx('Хатолик')}: ${escape(e.message)}<br><br>qissalar.json ${tx('юкланмади')}.</div>`;
   }
 }
 
@@ -110,16 +169,16 @@ function renderHome() {
   scrollTop();
   app.innerHTML = `
     <section class="hero">
-      <h1>${escape(DATA.title)}</h1>
-      <p class="subtitle">Болалар учун ёзилган пайғамбарлар тарихи</p>
-      <p class="author">— ${escape(DATA.author)}</p>
+      <h1>${T(DATA.title)}</h1>
+      <p class="subtitle">${tx('Болалар учун ёзилган пайғамбарлар тарихи')}</p>
+      <p class="author">— ${T(DATA.author)}</p>
     </section>
 
     <a class="intro-card" href="#/intro">
       <span class="ico">✨</span>
       <div>
-        <div class="lbl">Муқаддима</div>
-        <div class="desc">Муаллифдан болаларга мурожаат</div>
+        <div class="lbl">${tx('Муқаддима')}</div>
+        <div class="desc">${tx('Муаллифдан болаларга мурожаат')}</div>
       </div>
     </a>
 
@@ -134,8 +193,8 @@ function renderHome() {
             <a class="chapter-card ${meta.color}" href="#/c/${i}">
               <div class="num">${meta.emoji}</div>
               <div>
-                <div class="ttl">${escape(ch.title)}</div>
-                <div class="meta">${escape(sub)}</div>
+                <div class="ttl">${T(ch.title)}</div>
+                <div class="meta">${T(sub)}</div>
               </div>
               <div class="arrow">›</div>
             </a>
@@ -152,14 +211,14 @@ function renderIntro() {
   app.innerHTML = `
     <article class="reader">
       <div class="reader-head">
-        <div class="crumb">Бошланиш</div>
-        <h1>${escape(DATA.intro.title)}</h1>
+        <div class="crumb">${tx('Бошланиш')}</div>
+        <h1>${T(DATA.intro.title)}</h1>
       </div>
       ${renderBlocks(DATA.intro.blocks)}
-      <p style="text-align:right; font-style:italic; color:var(--ink-soft); margin-top:18px;">— ${escape(DATA.intro.author)}</p>
+      <p style="text-align:right; font-style:italic; color:var(--ink-soft); margin-top:18px;">— ${T(DATA.intro.author)}</p>
       <div class="reader-nav">
-        <a class="home" href="#/">🏠 Бош саҳифа</a>
-        <a href="#/c/0">Биринчи қисса ›</a>
+        <a class="home" href="#/">🏠 ${tx('Бош саҳифа')}</a>
+        <a href="#/c/0">${tx('Биринчи қисса')} ›</a>
       </div>
     </article>
   `;
@@ -176,9 +235,9 @@ function renderChapter(ci) {
   const meta = CHAPTER_META[ci] || { color: 'c-gold', emoji: '📖' };
   app.innerHTML = `
     <div class="page-head">
-      <div class="crumb">Боб ${ci + 1}</div>
-      <h1>${meta.emoji} ${escape(ch.title)}</h1>
-      <p class="lead">Ушбу бобда ${ch.stories.length} қисса жамланган.</p>
+      <div class="crumb">${tx('Боб')} ${ci + 1}</div>
+      <h1>${meta.emoji} ${T(ch.title)}</h1>
+      <p class="lead">${tx(`Ушбу бобда ${ch.stories.length} қисса жамланган.`)}</p>
     </div>
 
     <ul class="story-list">
@@ -187,8 +246,8 @@ function renderChapter(ci) {
           <a class="story-card" href="#/c/${ci}/s/${si}">
             <div class="ico">${storyEmoji(ci, st)}</div>
             <div>
-              <div class="ttl">${escape(st.title)}</div>
-              <div class="meta">${st.sections.length} бўлим</div>
+              <div class="ttl">${T(st.title)}</div>
+              <div class="meta">${st.sections.length} ${tx('бўлим')}</div>
             </div>
             <div class="arrow">›</div>
           </a>
@@ -203,14 +262,14 @@ function renderStory(ci, si) {
   scrollTop();
   const ch = DATA.chapters[ci];
   const st = ch.stories[si];
-  const crumb = ch.stories.length > 1 ? `${escape(ch.title)} ›` : `Боб ${ci + 1}`;
+  const crumb = ch.stories.length > 1 ? `${T(ch.title)} ›` : `${tx('Боб')} ${ci + 1}`;
 
   // Continuous flow: render every section's blocks inline with the section title as a heading
   const body = st.sections.map((s, pi) => {
     const hdr = s.title
       ? `<h2 class="sec-head" id="s${pi}">
            ${s.number != null ? `<span class="sec-num">${s.number}</span>` : '<span class="sec-dot">◆</span>'}
-           <span>${escape(s.title)}</span>
+           <span>${T(s.title)}</span>
          </h2>`
       : '';
     return hdr + renderBlocks(s.blocks);
@@ -236,19 +295,19 @@ function renderStory(ci, si) {
     <article class="reader">
       <div class="reader-head">
         <div class="crumb">${crumb}</div>
-        <h1>${storyEmoji(ci, st)} ${escape(st.title)}</h1>
-        <p class="lead">${st.sections.length} бўлим</p>
+        <h1>${storyEmoji(ci, st)} ${T(st.title)}</h1>
+        <p class="lead">${st.sections.length} ${tx('бўлим')}</p>
       </div>
 
       ${body}
 
       <div class="reader-nav reader-nav-wide">
         ${prevHref
-          ? `<a class="navlink prev" href="${prevHref}"><span class="dir">‹ Олдинги</span><span class="ttl">${escape(prevLabel)}</span></a>`
+          ? `<a class="navlink prev" href="${prevHref}"><span class="dir">‹ ${tx('Олдинги')}</span><span class="ttl">${T(prevLabel)}</span></a>`
           : '<span class="navlink disabled"></span>'}
-        <a class="navlink home" href="#/" title="Бош саҳифа">🏠</a>
+        <a class="navlink home" href="#/" title="${tx('Бош саҳифа')}">🏠</a>
         ${nextHref
-          ? `<a class="navlink next" href="${nextHref}"><span class="dir">Кейинги ›</span><span class="ttl">${escape(nextLabel)}</span></a>`
+          ? `<a class="navlink next" href="${nextHref}"><span class="dir">${tx('Кейинги')} ›</span><span class="ttl">${T(nextLabel)}</span></a>`
           : '<span class="navlink disabled"></span>'}
       </div>
     </article>
@@ -262,14 +321,14 @@ function renderBlocks(blocks) {
   return (blocks || []).map(b => {
     switch (b.kind) {
       case 'quote':
-        return `<div class="quote">${escape(b.text)}</div>`;
+        return `<div class="quote">${T(b.text)}</div>`;
       case 'italic':
-        return `<p class="italic">${escape(b.text)}</p>`;
+        return `<p class="italic">${T(b.text)}</p>`;
       case 'subheading':
-        return `<h2 class="subhead">${escape(b.text)}</h2>`;
+        return `<h2 class="subhead">${T(b.text)}</h2>`;
       case 'para':
       default:
-        return `<p>${escape(b.text)}</p>`;
+        return `<p>${T(b.text)}</p>`;
     }
   }).join('');
 }
