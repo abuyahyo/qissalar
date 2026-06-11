@@ -27,6 +27,10 @@ Maqola **islom.uz/maqola/2396** dan olinadi (API: `https://new.islom.uz/api/v1/p
 ```
 node -e "const s=require('sharp'),f=require('fs');['icon-192.png',192,'icon-512.png',512,'apple-touch-icon.png',180].reduce(async(p,v,i,a)=>{if(i%2)return;await p;await s(f.readFileSync('icon.svg'),{density:384}).resize(a[i+1],a[i+1]).png().toFile(v);},Promise.resolve())"
 ```
+Maskable ikona **alohida** `icon-maskable.svg`'dan generatsiya qilinadi (full-bleed fon + ~80% xavfsiz zona — Android adaptive-icon kesib qo'ymasligi uchun, `icon.svg`'ni nusxa qilmang):
+```
+node -e "const s=require('sharp'),f=require('fs');s(f.readFileSync('icon-maskable.svg'),{density:384}).resize(512,512).png().toFile('icon-maskable-512.png')"
+```
 
 ### Maydon ma'nolari
 - **chapter** (`h1`) — original maqolaning 4 bobi

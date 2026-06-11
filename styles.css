@@ -43,6 +43,20 @@ body {
 .fz-xl { --fz: 22px; }
 .fz-xxl { --fz: 24px; }
 
+/* ---------- Keyboard focus (a11y) ---------- */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+.iconbtn:focus-visible { outline-offset: 0; }
+/* Don't show the ring for pointer/touch taps, only keyboard */
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible),
+summary:focus:not(:focus-visible) { outline: none; }
+
 /* ---------- Topbar ---------- */
 .topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 50;
