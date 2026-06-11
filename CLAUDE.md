@@ -7,11 +7,26 @@ abuyahyo/qissalar — GitHub Pages SPA. Bolalar uchun "Payg'ambarlar qissasi" (S
 Maqola **islom.uz/maqola/2396** dan olinadi (API: `https://new.islom.uz/api/v1/posts/2396` — JSON `body` HTML matn beradi). `parse.js` shu HTML'ni strukturali `qissalar.json`ga aylantiradi.
 
 ## Struktura
-- `index.html` — SPA shell
+- `index.html` — SPA shell (manifest + apple-touch-icon meta'lari)
 - `styles.css` — bolalarbop pastel dizayn, tungi mavzu, font o'lchamini o'zgartirish
-- `app.js` — hash-router, render funksiyalar
+- `app.js` — hash-router, render funksiyalar, Kirill↔Lotin translit, SW registratsiyasi
 - `qissalar.json` — parslangan mazmun: `chapters → stories → sections → blocks`
 - `parse.js` — bir martalik konversiya skripti
+- `sw.js` — Service Worker (PWA)
+- `manifest.json` — PWA manifest
+- `icon-{192,512,maskable}.png`, `apple-touch-icon.png` — sharp orqali `icon.svg`'dan generatsiya qilinadi
+
+## PWA / Service Worker
+**Strategiya:** network-first 3s timeout bilan, offline'da kesh'dan fallback. Stale-cache muammosi yo'q — onlayn foydalanuvchi har sahifa yuklashda yangi mazmun oladi.
+
+**Yangilanish:** SW `skipWaiting()` + `clients.claim()` qiladi → yangi versiya darhol almashtiriladi, kesh tozalash kerak emas. Registratsiya `updateViaCache: 'none'` bilan, demak `sw.js` o'zi hech qachon keshlanmaydi.
+
+**Versiya:** `sw.js` ichida `VERSION = 'v1'` konstanta. Asoslimaslik: matn yangilansa ham, JSON network-first sxema bilan keladi. VERSION'ni bumpla **faqat** SW logikasi yoki precache ro'yxati o'zgarganda — keshni butunlay tozalash uchun.
+
+**Ikonalarni qayta generatsiya qilish:**
+```
+node -e "const s=require('sharp'),f=require('fs');['icon-192.png',192,'icon-512.png',512,'apple-touch-icon.png',180].reduce(async(p,v,i,a)=>{if(i%2)return;await p;await s(f.readFileSync('icon.svg'),{density:384}).resize(a[i+1],a[i+1]).png().toFile(v);},Promise.resolve())"
+```
 
 ### Maydon ma'nolari
 - **chapter** (`h1`) — original maqolaning 4 bobi

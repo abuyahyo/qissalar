@@ -115,6 +115,25 @@ backBtn.addEventListener('click', () => {
 window.addEventListener('hashchange', render);
 window.addEventListener('DOMContentLoaded', load);
 
+// ---------- Service Worker registration (PWA) ----------
+// Strategy: network-first SW (see sw.js). updateViaCache:'none' so SW file
+// itself is never cached → updates land within one reload when online.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+      .then(reg => {
+        // Re-check for updates whenever the page becomes visible
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden) reg.update().catch(() => {});
+        });
+      })
+      .catch(() => {});
+  });
+
+  // When a new SW takes control, the next navigation already serves fresh
+  // content. No prompt needed thanks to skipWaiting + clients.claim in sw.js.
+}
+
 async function load() {
   app.innerHTML = `<div class="loading"><div class="spinner"></div>${tx('Юкланмоқда')}…</div>`;
   try {
