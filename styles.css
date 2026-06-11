@@ -20,12 +20,14 @@
   --radius: 16px;
   --maxw: 680px;
   --fz: 18px;
+  /* Single system-sans stack used everywhere (SF Pro on iOS) */
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font);
   font-size: var(--fz);
   line-height: 1.65;
   color: var(--ink);
@@ -125,7 +127,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   padding: 36px 16px 22px;
 }
 .hero h1 {
-  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  font-family: var(--font);
   font-size: 30px;
   line-height: 1.18;
   margin: 0;
@@ -179,7 +181,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   border-radius: 12px;
   background: var(--gold-tint);
   display: flex; align-items: center; justify-content: center;
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: var(--font);
   font-size: 16px; font-weight: 700; color: var(--gold);
   flex-shrink: 0;
 }
@@ -208,7 +210,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   color: var(--ink-faint); margin-bottom: 8px;
 }
 .page-head h1 {
-  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  font-family: var(--font);
   font-size: 26px; margin: 0; line-height: 1.22;
   letter-spacing: -0.02em;
 }
@@ -230,7 +232,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   width: 40px; height: 40px; border-radius: 12px;
   background: var(--gold-tint);
   display: flex; align-items: center; justify-content: center;
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: var(--font);
   font-size: 16px; font-weight: 700; color: var(--gold);
 }
 .story-card .ttl { font-weight: 650; font-size: 16.5px; letter-spacing: -0.01em; }
@@ -240,7 +242,7 @@ summary:focus:not(:focus-visible) { outline: none; }
 /* ---------- Reader ---------- */
 .reader {
   padding: 6px 0 24px;
-  font-family: ui-serif, "New York", "Iowan Old Style", "Apple Garamond", Georgia, serif;
+  font-family: var(--font);
 }
 .reader-head {
   margin-bottom: 22px;
@@ -251,7 +253,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   font-size: 12px; font-weight: 600; letter-spacing: .06em;
   text-transform: uppercase;
   color: var(--ink-faint); margin-bottom: 8px;
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: var(--font);
 }
 .reader-head h1 {
   font-size: 28px; margin: 0; line-height: 1.22;
@@ -290,7 +292,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   border: 1px solid var(--line);
   border-radius: 14px;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  font-family: var(--font);
 }
 .reader .toc summary {
   cursor: pointer;
@@ -349,7 +351,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   border-top: none;
 }
 .reader .sec-num {
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: var(--font);
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 30px; height: 30px; padding: 0 9px;
   border-radius: 9px;
@@ -364,7 +366,7 @@ summary:focus:not(:focus-visible) { outline: none; }
   display: flex; gap: 10px; margin-top: 32px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
-  font-family: -apple-system, system-ui, sans-serif;
+  font-family: var(--font);
 }
 .reader-nav a {
   flex: 1;
@@ -384,7 +386,7 @@ summary:focus:not(:focus-visible) { outline: none; }
 .reader-nav .home { flex: 0 0 auto; padding: 13px 16px; }
 
 /* Wide variant for between-stories navigation with chapter labels */
-.reader-nav-wide { font-family: -apple-system, system-ui, sans-serif; }
+.reader-nav-wide { font-family: var(--font); }
 .reader-nav-wide .navlink {
   flex: 1;
   display: flex; flex-direction: column;
